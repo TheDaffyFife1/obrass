@@ -23,10 +23,12 @@ from asistencias_obras.views import reporte_asistencia,editar_empleado,lista_obr
 from django.contrib.auth import views as auth_views
 from asistencias_obras import views
 from asistencias_obras.api import registrar_asistencia
+from django.urls import include
 
 
 
 urlpatterns = [
+    path('ajax/progreso_obras/', views.progreso_obras, name='progreso_obras'),
     path('', auth_views.LoginView.as_view(template_name='login.html'), name='root_login'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),

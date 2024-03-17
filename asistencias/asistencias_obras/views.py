@@ -15,6 +15,9 @@ from django.core.serializers import serialize
 import json
 from django import forms
 from django.views.decorators.http import require_POST
+from datetime import datetime
+from django.shortcuts import render
+from django.utils.timezone import make_aware
 
 @login_required
 def accesos(request):
@@ -288,3 +291,25 @@ def user_asistencia(request):
     else:
         return HttpResponseForbidden("No tienes permiso para ver esta página.")
 
+@login_required
+def progreso_obras(request):
+    objetos = Obra.objects.all()
+    hoy = make_aware(datetime.now())
+
+    nombres = []
+    porcentajes = []
+
+    for objeto in objetos:
+        tiempo_total = (objeto.fecha_fin - objeto.fecha_inicio).total_seconds()
+        tiempo_transcurrido = (hoy - objeto.fecha_inicio).total_seconds()
+        porcentaje_transcurrido = (tiempo_transcurrido / tiempo_total) * 100
+
+        nombres.append(objeto.nombre)  # Asume un campo 'nombre' en tu modelo
+        porcentajes.append(porcentaje_transcurrido)
+
+    context = {
+        "nombres": nombres,
+        "porcentajes": porcentajes
+    }
+
+    return render(request, "admin_dashboard.html", context)
