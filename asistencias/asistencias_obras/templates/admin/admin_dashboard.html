@@ -97,9 +97,7 @@
                     <canvas id="transcurrido" width="400" height="400"></canvas>
 
                     
-                    <script>
-                        console.log('hola mundo ')
-                    </script>
+                 
                 </div>
                 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
                 <!-- Font Awesome -->
@@ -112,30 +110,13 @@
 
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 
-                
+                               
                 <script>
-
-                    document.addEventListener('DOMContentLoaded', (event) => {
-                        var ctx = document.getElementById('miGraficaPastel').getContext('2d');
-                        var miGraficaPastel = new Chart(ctx, {
-                            type: 'pie',
-                            data: {
-                                labels: ['Ejemplo 1', 'Ejemplo 2'],
-                                datasets: [{
-                                    data: [10, 90],
-                                    backgroundColor: ['red', 'blue'],
-                                }]
-                            }
-                        });
-                    });
-                    </script>
-                <script>
-                      document.addEventListener('DOMContentLoaded', (event) => {
-    console.log('El DOM está completamente cargado');
-    // Más código aquí
-});
+        
                     var nombres = JSON.parse(document.getElementById('nombres').textContent);
+                    console.log(nombres);
                     var porcentajes = JSON.parse(document.getElementById('porcentajes').textContent);
+                    console.log(porcentajes);
 
                     var ctx = document.getElementById('transcurrido').getContext('2d');
                     var miGraficaPastel = new Chart(ctx, {
@@ -184,9 +165,7 @@
                             }
                         }
                     });
-                </script>
-            
-                <script>
+
                     var chartOne = document.getElementById('chartOne');
                     var myChart = new Chart(chartOne, {
                         type: 'bar',
