@@ -92,20 +92,45 @@
                                     <td class="text-left py-3 px-4"><a class="hover:text-blue-500" href="mailto:jonsmith@mail.com">jonsmith@mail.com</a></td>
                                 </tr>
                             </tbody>
+                            <div class="bg-white overflow-auto">
+
+                            </div>
                         </table>
+
+                    </div>
                         <div class="flex flex-wrap mt-6">
                             <div class="w-full lg:w-1/2 pr-0 lg:pr-2">
                                 <div class="p-6 bg-white">
+                                    <p class="text-xl pb-3 flex items-center">
+                                        <i class="fas fa-plus mr-3"></i> Progreso de obras
+                                    </p>
                                     <canvas id="transcurrido" width="400" height="200"></canvas>
                                 </div>
                             </div>
                             <div class="w-full lg:w-1/2 pl-0 lg:pl-2 mt-12 lg:mt-0">
                                 <div class="p-6 bg-white">
+                                    <p class="text-xl pb 3 flex items-center">
+                                        <i class="fas fa-check mr-3"></i> Asistencia de empleados
+                                    </p>
                                     <canvas id="asistencia" width="400" height="200"></canvas>
                                 </div>
                             </div>
                         </div>
-                 
+                <div class="w-full mt-12">
+                    
+
+                 <table id="tablaObras" class="table table-striped">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Obra</th>
+                            <th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Empleados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!--Datos obtenidos con AJAX-->
+                    </tbody>
+                 </table>
+                </div>
                 
                 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
                 <!-- Font Awesome -->
@@ -120,6 +145,31 @@
                 
                       
                 <script>
+                    $(document).ready(function() {
+                        $.ajax({
+                            url: '/ajax/obras_con_empleados/',
+                            method: 'GET',
+                            success: function(response) {
+                                var tabla = $('#tablaObras tbody');
+                                tabla.empty(); // Limpia la tabla antes de llenarla con nuevos datos
+                    
+                                response.obras.forEach(function(obra) {
+                                    var fila = $('<tr></tr>');
+                                    fila.append('<td class="w-1/3 text-left py-3 px-4">' + obra.obra_nombre + '</td>');
+                    
+                                    var listaEmpleados = obra.empleados.map(function(empleado) {
+                                        return empleado.empleado_nombre;
+                                    }).join(', '); // Crea una lista separada por comas de los nombres de los empleados
+                    
+                                    fila.append('<td class="w-1/3 text-left py-3 px-4">' + listaEmpleados + '</td>');
+                    
+                                    tabla.append(fila);
+                                });
+                            }
+                        });
+                    });
+                    
+
                    $(document).ready(function() {
                         $.ajax({
                             url: '/ajax/progreso_obras/',

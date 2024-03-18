@@ -333,4 +333,27 @@ def asistencia_obras(request):
 
     # Retorna la información en formato JSON
     return JsonResponse({'obras': obras_data})
- 
+
+@login_required
+def obras_con_empleados(request):
+    # Suponiendo que tienes un modelo 'Obra' y un modelo 'Empleado' con una FK a 'Obra'
+    todas_las_obras = Obra.objects.prefetch_related('empleado_set').all()
+
+    # Construye un diccionario para cada obra con su lista de empleados
+    data = [
+        {
+            'obra_id': obra.id,
+            'obra_nombre': obra.nombre,
+            'empleados': [
+                {
+                    'empleado_id': empleado.id,
+                    'empleado_nombre': empleado.nombre,
+                    'empleado_puesto_id': empleado.puesto.id,
+                }
+                for empleado in obra.empleado_set.all()
+            ]
+        }
+        for obra in todas_las_obras
+    ]
+
+    return JsonResponse({'obras': data})
