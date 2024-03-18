@@ -357,3 +357,25 @@ def obras_con_empleados(request):
     ]
 
     return JsonResponse({'obras': data})
+
+@login_required
+def progreso_obras_indivual(request):
+    objetos = Obra.objects.all()
+    hoy = now()
+    labels = []
+    data = []
+    resto = []
+
+    for objeto in objetos:
+        tiempo_total = (objeto.fecha_fin - objeto.fecha_inicio).days
+        tiempo_transcurrido = (hoy.date() - objeto.fecha_inicio).days 
+        
+        porcentaje_transcurrido = (tiempo_transcurrido / tiempo_total) * 100 if tiempo_total else 0
+        restante = 100 - abs(porcentaje_transcurrido) 
+        
+        labels.append(objeto.nombre)  # Agrega el nombre de la obra a la lista de etiquetas
+        data.append(abs(int(porcentaje_transcurrido))) # Agrega el porcentaje de progreso a la lista de datos
+        resto.append(int(restante))
+
+
+    return JsonResponse({'labels': labels, 'data': data, 'resto': resto})

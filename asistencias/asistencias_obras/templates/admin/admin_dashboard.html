@@ -3,6 +3,24 @@
 {% block content %}
 <head>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0"></script>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* crea 2 columnas */
+            grid-gap: 20px; /* espacio entre las columnas */
+            padding: 20px;
+        }
+        .grid-item {
+            background-color: #f7f7f7; /* color de fondo para cada elemento de la grilla */
+            border: 1px solid #e7e7e7; /* borde para cada elemento de la grilla */
+            padding: 20px; /* espacio interior para cada elemento de la grilla */
+        }
+        canvas {
+            width: 100% !important;
+            max-width: 400px; /* o la anchura máxima deseada */
+            height: auto !important;
+        }
+    </style>
    
 </head>
 <h1 class="text-3xl text-black pb-6">Dashboard</h1>
@@ -130,6 +148,15 @@
                         <!--Datos obtenidos con AJAX-->
                     </tbody>
                  </table>
+
+                 <div class="flex flex-wrap mt-6">
+                    <div class="grid-container" id="chart-container">
+                        <!-- Gráficas de pastel de progreso de obras -->
+                    </div>
+            
+
+                 </div>
+
                 </div>
                 
                 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
@@ -137,14 +164,80 @@
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
                 <!-- ChartJS -->
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
-
-               
-
-
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 
                       
                 <script>
+
+                    $(document).ready(function() {
+                        $.ajax({
+                            url: '/ajax/progreso_obras_indivual/', // URL del endpoint
+                            method: 'GET',
+                            dataType: 'json',
+                            success: function(response) {
+                                console.log(response);
+                                var contenedor = $('#chart-container');
+                                contenedor.empty(); // Limpiar el contenedor para nuevas gráficas
+
+                                response.labels.forEach(function(label, index) {
+                                    // Crea un nuevo div que actuará como contenedor para la gráfica de pastel y el título
+                                    var graficaDiv = $('<div>').addClass('grid-item');
+                                    
+                                    // Crea y añade un párrafo como título con el nombre de la obra
+                                    var titulo = $('<p>').text(label);
+                                    graficaDiv.append(titulo);
+
+                                    // Añade el elemento canvas al div contenedor
+                                    var canvasId = 'graficaPastel' + index;
+                                    var canvas = $('<canvas>').attr('id', canvasId);
+                                    graficaDiv.append(canvas);
+
+                                    // Añade el div contenedor al contenedor principal
+                                    contenedor.append(graficaDiv);
+                            
+
+                                    // Calcula el progreso y el resto hasta el 100%
+                                    var progreso = response.data[index];
+                                    var resto = response.resto[index];
+                                    var texto = response.labels[index];
+                                    console.log(texto)
+                                
+
+                                    // Crea la gráfica de pastel para esta obra
+                                    var ctx = canvas.get(0).getContext('2d');
+                                    new Chart(ctx, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: ['Progreso', 'Restante'],
+                                            datasets: [{
+                                                data: [progreso, resto],
+                                                backgroundColor: ['#4CAF50', '#FFC107'], // Verde para progreso, amarillo para lo restante
+                                                borderColor: ['#ffffff', '#ffffff'],
+                                                borderWidth: 1
+                                            }]
+                                        },
+                                        options: {
+                                            plugins: {
+                                                legend: {
+                                                    display: true
+                                                },
+                                                title: {
+                                                    display: true,
+                                                    text: label // Nombre de la obra como título de la gráfica
+                                                }
+                                            }
+                                        }
+                                    });
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Error en la solicitud AJAX: ", xhr, status, error);
+                            }
+                    });
+                    });
+
+
+
                     $(document).ready(function() {
                         $.ajax({
                             url: '/ajax/obras_con_empleados/',
@@ -185,15 +278,13 @@
                             url: '/ajax/asistencia_obras/',
                             method: 'GET',
                             success: function(respuesta) {
-                                console.log(respuesta);
                                 var etiquetas = respuesta.obras.map(function(obra) {
                                     return obra.obra_nombre;
                                 });
                                 var datos = respuesta.obras.map(function(obra) {
                                     return obra.porcentaje_asistencia;
                                 });
-                                console.log(etiquetas);
-                                console.log(datos);
+                               
                                 crearGraficaDeRadar(etiquetas, datos, 'asistencia');
                                 
                             }
