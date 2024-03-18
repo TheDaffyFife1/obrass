@@ -17,7 +17,9 @@ from django import forms
 from django.views.decorators.http import require_POST
 from datetime import datetime
 from django.shortcuts import render
-from django.utils.timezone import make_aware
+from django.utils.timezone import now
+from django.db.models import Count
+
 
 @login_required
 def accesos(request):
@@ -294,22 +296,41 @@ def user_asistencia(request):
 @login_required
 def progreso_obras(request):
     objetos = Obra.objects.all()
-    hoy = make_aware(datetime.now())
-
-    nombres = []
-    porcentajes = []
+    hoy = now()
+    labels = []
+    data = []
 
     for objeto in objetos:
-        tiempo_total = (objeto.fecha_fin - objeto.fecha_inicio).total_seconds()
-        tiempo_transcurrido = (hoy - objeto.fecha_inicio).total_seconds()
-        porcentaje_transcurrido = (tiempo_transcurrido / tiempo_total) * 100
+        tiempo_total = (objeto.fecha_fin - objeto.fecha_inicio).days
+        tiempo_transcurrido = (hoy.date() - objeto.fecha_inicio).days 
+        
+        porcentaje_transcurrido = (tiempo_transcurrido / tiempo_total) * 100 if tiempo_total else 0
+        porcentaje_transcurrido
 
-        nombres.append(objeto.nombre)  # Asume un campo 'nombre' en tu modelo
-        porcentajes.append(porcentaje_transcurrido)
+        labels.append(objeto.nombre)  # Agrega el nombre de la obra a la lista de etiquetas
+        data.append(abs(int(porcentaje_transcurrido))) # Agrega el porcentaje de progreso a la lista de datos
 
-    context = {
-        "nombres": nombres,
-        "porcentajes": porcentajes
-    }
+    return JsonResponse({'labels': labels, 'data': data})
 
-    return render(request, "admin_dashboard.html", context)
+@login_required
+def asistencia_obras(request):
+    # Asumiendo que tienes un campo que identifica cada día único de asistencia, por ejemplo 'fecha'
+    obras_con_asistencias = Obra.objects.annotate(
+        total_asistencias=Count('empleado__asistencia', distinct=True),
+        total_empleados=Count('empleado', distinct=True)
+    )
+
+    # Calcular el porcentaje de asistencias por obra
+    obras_data = []
+    for obra in obras_con_asistencias:
+        # Asumiendo que cada empleado debería haber asistido cada día
+        dias_laborales = obra.total_asistencias / obra.total_empleados if obra.total_empleados else 0
+        porcentaje = (obra.total_asistencias / (obra.total_empleados * dias_laborales) * 100) if dias_laborales else 0
+        obras_data.append({
+            'obra_nombre': obra.nombre,
+            'porcentaje_asistencia': porcentaje
+        })
+
+    # Retorna la información en formato JSON
+    return JsonResponse({'obras': obras_data})
+ 

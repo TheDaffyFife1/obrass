@@ -2,12 +2,12 @@
 
 {% block content %}
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0"></script>
+   
 </head>
 <h1 class="text-3xl text-black pb-6">Dashboard</h1>
-{{ nombres|json_script:"nombres" }}
-{{ porcentajes|json_script:"porcentajes" }}
+
+
     
                 <div class="flex flex-wrap mt-6">
                     <div class="w-full lg:w-1/2 pr-0 lg:pr-2">
@@ -93,12 +93,20 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                    <canvas id="transcurrido" width="400" height="400"></canvas>
-
-                    
+                        <div class="flex flex-wrap mt-6">
+                            <div class="w-full lg:w-1/2 pr-0 lg:pr-2">
+                                <div class="p-6 bg-white">
+                                    <canvas id="transcurrido" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-1/2 pl-0 lg:pl-2 mt-12 lg:mt-0">
+                                <div class="p-6 bg-white">
+                                    <canvas id="asistencia" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
                  
-                </div>
+                
                 <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
                 <!-- Font Awesome -->
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js" integrity="sha256-KzZiKy0DWYsnwMF+X1DvQngQ2/FxF7MF3Ff72XcpuPs=" crossorigin="anonymous"></script>
@@ -110,62 +118,39 @@
 
                 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
                 
-                               
+                      
                 <script>
-        
-                    var nombres = JSON.parse(document.getElementById('nombres').textContent);
-                    console.log(nombres);
-                    var porcentajes = JSON.parse(document.getElementById('porcentajes').textContent);
-                    console.log(porcentajes);
-
-                    var ctx = document.getElementById('transcurrido').getContext('2d');
-                    var miGraficaPastel = new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: nombres,
-                            datasets: [{
-                                label: 'Porcentaje de Tiempo Transcurrido',
-                                data: porcentajes,
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(255, 206, 86, 0.2)',
-                                    'rgba(75, 192, 192, 0.2)',
-                                    'rgba(153, 102, 255, 0.2)',
-                                    'rgba(255, 159, 64, 0.2)'
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(255, 206, 86, 1)',
-                                    'rgba(75, 192, 192, 1)',
-                                    'rgba(153, 102, 255, 1)',
-                                    'rgba(255, 159, 64, 1)'
-                                ],
-                                borderWidth: 1
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                tooltip: {
-                                    callbacks: {
-                                        label: function(context) {
-                                            var label = context.label || '';
-                                            if (label) {
-                                                label += ': ';
-                                            }
-                                            if (context.parsed !== null) {
-                                                label += new Number(context.parsed).toFixed(2) + '%';
-                                            }
-                                            return label;
-                                        }
-                                    }
-                                }
+                   $(document).ready(function() {
+                        $.ajax({
+                            url: '/ajax/progreso_obras/',
+                            method: 'GET',
+                            success: function(respuesta) {
+                             
+                                crearGrafica(respuesta.labels, respuesta.data, 'polarArea', 'transcurrido');
                             }
-                        }
+                        });
+                    });
+                    $(document).ready(function() {
+                        $.ajax({
+                            url: '/ajax/asistencia_obras/',
+                            method: 'GET',
+                            success: function(respuesta) {
+                                console.log(respuesta);
+                                var etiquetas = respuesta.obras.map(function(obra) {
+                                    return obra.obra_nombre;
+                                });
+                                var datos = respuesta.obras.map(function(obra) {
+                                    return obra.porcentaje_asistencia;
+                                });
+                                console.log(etiquetas);
+                                console.log(datos);
+                                crearGraficaDeRadar(etiquetas, datos, 'asistencia');
+                                
+                            }
+                        });
                     });
 
+                    
                     var chartOne = document.getElementById('chartOne');
                     var myChart = new Chart(chartOne, {
                         type: 'bar',
@@ -241,6 +226,76 @@
                             }
                         }
                     });
+
+                    function crearGrafica(etiquetas, datos, type, nombre) {
+                    var ctx = document.getElementById(nombre).getContext('2d');
+                    var miGraficaDePastel = new Chart(ctx, {
+                        type: type,
+                        data: {
+                            labels: etiquetas,
+                            datasets: [{
+                                label: 'Grafica',
+                                data: datos,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                ],
+                                borderColor: [
+                                    'rgba(255,99,132,1)',
+                                    'rgba(54, 162, 235, 1)',
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        
+                        options:{
+                            scales:{
+                                r:{
+                                    ticks:{
+                                        beginAtZero: true,
+                                        min:1,
+                                        max:100,
+                                        stepSize:10
+                                    }
+                                }
+                            }
+                        },
+                        plugins:{
+                            legend:{
+                                position:'top'
+                            }
+                        }
+                    });
+                }
+                function crearGraficaDeRadar(etiquetas, datos, nombre) {
+    var ctx = document.getElementById(nombre).getContext('2d');
+    var miGraficaDeRadar = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: etiquetas, // Las etiquetas son comúnmente categorías o grupos
+            datasets: [{
+                label: 'Asisntencias por obras',
+                data: datos, // Los datos numéricos para cada etiqueta
+                fill: true,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgb(255, 99, 132)',
+                pointBackgroundColor: 'rgb(255, 99, 132)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgb(255, 99, 132)'
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+}
+
+
                 </script>
                  
 {% endblock %}  
