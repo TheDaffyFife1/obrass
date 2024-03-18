@@ -1,4 +1,4 @@
 venv
-asistencias_obras/__pycache__
-asistencias/__pycache__
 settings.json
+__pycache__/
+*.py[cod]
