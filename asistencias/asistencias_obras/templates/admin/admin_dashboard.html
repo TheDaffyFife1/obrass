@@ -16,9 +16,11 @@
             padding: 20px; /* espacio interior para cada elemento de la grilla */
         }
         canvas {
-            width: 100% !important;
-            max-width: 400px; /* o la anchura máxima deseada */
-            height: auto !important;
+            
+            min-width: 600px;
+            max-width: 100%;
+            height: 400px; /* Puedes ajustar esto según sea necesario */
+                                
         }
     </style>
    
@@ -116,24 +118,27 @@
                         </table>
 
                     </div>
-                        <div class="flex flex-wrap mt-6">
-                            <div class="w-full lg:w-1/2 pr-0 lg:pr-2">
-                                <div class="p-6 bg-white">
-                                    <p class="text-xl pb-3 flex items-center">
-                                        <i class="fas fa-plus mr-3"></i> Progreso de obras
-                                    </p>
-                                    <canvas id="transcurrido" width="400" height="200"></canvas>
-                                </div>
-                            </div>
-                            <div class="w-full lg:w-1/2 pl-0 lg:pl-2 mt-12 lg:mt-0">
-                                <div class="p-6 bg-white">
-                                    <p class="text-xl pb 3 flex items-center">
-                                        <i class="fas fa-check mr-3"></i> Asistencia de empleados
-                                    </p>
-                                    <canvas id="asistencia" width="400" height="200"></canvas>
-                                </div>
+                    <div class="flex flex-col">
+                        <div class="bg-white p-4">
+                            <p class="text-xl pb-3 flex items-center">
+                                <i class="fas fa-plus mr-3"></i> Progreso de obras
+                            </p>
+                            <div class="w-full flex justify-center">
+                                <canvas id="transcurrido" height="400px" ></canvas>
                             </div>
                         </div>
+                        <div class="bg-white p-4 mt-4">
+                            <p class="text-xl pb-3 flex items-center">
+                                <i class="fas fa-check mr-3"></i> Asistencia de empleados
+                            </p>
+                            <div class="w-full flex justify-center">
+                                <canvas id="asistencia" height="500px"></canvas>
+                            </div>
+                           
+                        </div>
+                    </div>
+                    
+
                 <div class="w-full mt-12">
                     
 
@@ -200,7 +205,6 @@
                                     var progreso = response.data[index];
                                     var resto = response.resto[index];
                                     var texto = response.labels[index];
-                                    console.log(texto)
                                 
 
                                     // Crea la gráfica de pastel para esta obra
@@ -380,10 +384,55 @@
                                 backgroundColor: [
                                     'rgba(255, 99, 132, 0.2)',
                                     'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)',
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+
                                 ],
                                 borderColor: [
-                                    'rgba(255,99,132,1)',
+                                    'rgba(255, 99, 132, 1)',
                                     'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                     
+
                                 ],
                                 borderWidth: 1
                             }]
@@ -415,11 +464,25 @@
         data: {
             labels: etiquetas, // Las etiquetas son comúnmente categorías o grupos
             datasets: [{
-                label: 'Asisntencias por obras',
+                label: 'Asistencias por obras',
                 data: datos, // Los datos numéricos para cada etiqueta
                 fill: true,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
                 pointBackgroundColor: 'rgb(255, 99, 132)',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
