@@ -15,12 +15,17 @@
             border: 1px solid #e7e7e7; /* borde para cada elemento de la grilla */
             padding: 20px; /* espacio interior para cada elemento de la grilla */
         }
-        canvas {
+        .canvas_especial {
             
             min-width: 600px;
             max-width: 100%;
             height: 400px; /* Puedes ajustar esto según sea necesario */
                                 
+        }
+        canvas {
+            width: 100% !important;
+            max-width: 400px; /* o la anchura máxima deseada */
+            height: auto !important;
         }
     </style>
    
@@ -124,7 +129,7 @@
                                 <i class="fas fa-plus mr-3"></i> Progreso de obras
                             </p>
                             <div class="w-full flex justify-center">
-                                <canvas id="transcurrido" height="400px" ></canvas>
+                                <canvas id="transcurrido" class="canvas_especial" ></canvas>
                             </div>
                         </div>
                         <div class="bg-white p-4 mt-4">
@@ -132,7 +137,7 @@
                                 <i class="fas fa-check mr-3"></i> Asistencia de empleados
                             </p>
                             <div class="w-full flex justify-center">
-                                <canvas id="asistencia" height="500px"></canvas>
+                                <canvas id="asistencia" class="canvas_especial"></canvas>
                             </div>
                            
                         </div>
@@ -155,6 +160,9 @@
                  </table>
 
                  <div class="flex flex-wrap mt-6">
+                    <p class="text-xl pb-3 flex items-center">
+                        <i class="fas fa-check mr-3"></i> Progreso de Obras Individuales
+                    </p>
                     <div class="grid-container" id="chart-container">
                         <!-- Gráficas de pastel de progreso de obras -->
                     </div>
@@ -221,6 +229,8 @@
                                             }]
                                         },
                                         options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
                                             plugins: {
                                                 legend: {
                                                     display: true
@@ -439,6 +449,8 @@
                         },
                         
                         options:{
+                            responsive: true,
+                            maintainAspectRatio: false,
                             scales:{
                                 r:{
                                     ticks:{
@@ -490,6 +502,8 @@
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             elements: {
                 line: {
                     borderWidth: 3
